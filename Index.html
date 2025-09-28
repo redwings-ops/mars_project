@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>MarsRecycle Demo</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <style>
+    body { margin:0; background:#080918; color:#eee; font-family: sans-serif; }
+    #info { position: absolute; left: 10px; top: 10px; background: rgba(0,0,0,0.45); padding:8px; border-radius:6px; }
+    #score { font-weight:700; }
+    canvas { touch-action: none; }
+  </style>
+</head>
+<body>
+<div id="info">
+  <div>Drag modules (shredder, extruder, sinterer). Tap waste to launch it toward sorter.</div>
+  <div id="score">Material produced: 0 kg</div>
+</div>
+
+<script>
+let modules = [];
+let wastes = [];
+let produced = 0;
+let fontSmall;
+function setup(){
+  createCanvas(windowWidth, windowHeight);
+  // create 3 modules
+  modules.push(new Module(80, height-160, 'Shredder', 0.6));
+  modules.push(new Module(240, height-160, 'Extruder', 0.8));
+  modules.push(new Module(400, height-160, 'Sinterer', 1.5));
+  textAlign(LEFT, CENTER);
+  spawnWasteWave();
+  setInterval(spawnWasteWave, 6000);
+}
+
+function spawnWasteWave(){
+  // spawn 6 waste items at left edge
+  for(let i=0;i<6;i++){
+    wastes.push(new Waste(-30 - i*40, random(80, height-220)));
+  }
+}
+
+function draw(){
+  background(7,9,24);
+  drawHorizon();
+  // modules
+  for(let m of modules){
+    m.update();
+    m.display();
+  }
+  // wastes
+  for(let i=wastes.length-1;i>=0;i--){
+    let w = wastes[i];
+    w.update();
+    w.display();
+    // check connection to modules
+    for(let m of modules){
+      if(dist(w.x,w.y,m.x,m.y) < 60 && m.isActive()){
+        // process success depends on module efficiency
+        let success = random() < m.eff;
+        if(success){
+          // depending on module type, produce different mass
+          let massOut = w.mass * (0.4 + m.eff*0.6); // simplified
+          produced += massOut;
+          wastes.splice(i,1);
+          break;
+        } else {
+          // failure: bounce off
+          w.vx *= -0.5;
+          w.vy -= random(0.5);
+        }
+      }
+    }
+    // remove wastes offscreen
+    if(w.x > width+50 || w.y > height+200) wastes.splice(i,1);
+  }
+  // HUD
+  document.getElementById('score').innerText = 'Material produced: ' + produced.toFixed(1) + ' kg';
+}
+
+function drawHorizon(){
+  noStroke();
+  fill(30,25,40);
+  rect(0, height-120, width, 120);
+  fill(200,100,0,30);
+  rect(width-220, height-120, 220, 120);
+}
+
+// touch/dragging
+let dragging = null;
+function mousePressed(){
+  for(let i=modules.length-1;i>=0;i--){
+    if(modules[i].over(mouseX, mouseY)){ dragging = modules[i]; dragging.startDrag(mouseX,mouseY); break; }
+  }
+  // for mobile tap: launch a waste toward right
+  if(!dragging){
+    wastes.push(new Waste(40, random(60, height-260), 4 + random(1,3)));
+  }
+}
+function mouseDragged(){ if(dragging) dragging.drag(mouseX,mouseY); }
+function mouseReleased(){ if(dragging) dragging.stopDrag(); dragging = null; }
+
+class Module {
+  constructor(x,y,name,eff){
+    this.x=x; this.y=y; this.name=name; this.eff=eff;
+    this.w=120; this.h=70;
+    this.dragging=false;
+    this.cooldown=0;
+  }
+  isActive(){ return this.cooldown <= 0; }
+  startDrag(mx,my){ this.dragging=true; this.dx = this.x-mx; this.dy = this.y-my; }
+  drag(mx,my){ this.x = mx + this.dx; this.y = my + this.dy; }
+  stopDrag(){ this.dragging=false; this.cooldown = 0.2*60; } // frames
+  update(){
+    if(this.cooldown>0) this.cooldown--;
+  }
+  over(mx,my){
+    return mx>this.x-this.w/2 && mx<this.x+this.w/2 && my>this.y-this.h/2 && my<this.y+this.h/2;
+  }
+  display(){
+    push();
+    translate(this.x,this.y);
+    noStroke();
+    if(this.isActive()) fill(50,90,120); else fill(80,40,60);
+    rectMode(CENTER);
+    rect(0,0,this.w,this.h,12);
+    fill(255);
+    textAlign(CENTER,CENTER);
+    textSize(14);
+    text(this.name + '\n(eff ' + this.eff.toFixed(2) + ')', 0, -4);
+    pop();
+  }
+}
+
+class Waste {
+  constructor(x,y,speed){
+    this.x = x;
+    this.y = y;
+    this.vx = speed || random(1,3);
+    this.vy = random(-0.2,0.2);
+    this.r = 16;
+    this.mass = random(0.4,3.5); // kg per item
+    this.color = color(random(120,255), random(100,200), random(20,200));
+  }
+  update(){
+    this.x += this.vx;
+    this.vy += 0.02;
+    this.y += this.vy;
+  }
+  display(){
+    push();
+    translate(this.x,this.y);
+    noStroke();
+    fill(this.color);
+    ellipse(0,0,this.r*2);
+    fill(255); textSize(10); textAlign(CENTER,CENTER); text(this.mass.toFixed(1)+'kg',0,0);
+    pop();
+  }
+}
+
+// resize handling
+function windowResized(){ resizeCanvas(windowWidth, windowHeight); }
+
+</script>
+</body>
+</html>
