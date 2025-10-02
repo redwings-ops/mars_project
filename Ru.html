@@ -58,29 +58,28 @@ Notes:
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
   <script>
   // ========== Helper: procedural canvas texture creators ===========
-  function makeMarsTexture(size=512){
-    const c=document.createElement('canvas');c.width=c.height=size;const ctx=c.getContext('2d');
-    // base gradient
-    const g=ctx.createLinearGradient(0,0,size,size);
-    g.addColorStop(0,'#a14a2a');g.addColorStop(1,'#6f2d20');ctx.fillStyle=g;ctx.fillRect(0,0,size,size);
-    // noise
-    for(let i=0;i<30000;i++){ctx.fillStyle='rgba(0,0,0,'+(Math.random()*0.06)+')';ctx.fillRect(Math.random()*size,Math.random()*size,1,1)}
-    return new THREE.CanvasTexture(c);
+ 
+  function makeMarsTexture() {
+  const tex = new THREE.TextureLoader().load("mars_ground.png");
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(20, 20);   // tiling
+  return tex;
   }
-  function makeMetalTexture(size=256){const c=document.createElement('canvas');c.width=c.height=size;const ctx=c.getContext('2d');ctx.fillStyle='#8e8e8e';ctx.fillRect(0,0,size,size);
-    for(let i=0;i<20000;i++){ctx.fillStyle='rgba(255,255,255,'+(Math.random()*0.07)+')';ctx.fillRect(Math.random()*size,Math.random()*size,1,1)}
-    return new THREE.CanvasTexture(c);
-  }
-  function makePlasticTexture(color='#2b7dff',size=256){const c=document.createElement('canvas');c.width=c.height=size;const ctx=c.getContext('2d');ctx.fillStyle=color;ctx.fillRect(0,0,size,size);
-    ctx.globalCompositeOperation='overlay';for(let i=0;i<15000;i++){ctx.fillStyle='rgba(255,255,255,'+(Math.random()*0.03)+')';ctx.fillRect(Math.random()*size,Math.random()*size,1,1)}
-    return new THREE.CanvasTexture(c);
-  }
-  function makeOrganicTexture(size=256){const c=document.createElement('canvas');c.width=c.height=size;const ctx=c.getContext('2d');ctx.fillStyle='#6b4f2b';ctx.fillRect(0,0,size,size);
-    for(let i=0;i<12000;i++){ctx.fillStyle='rgba(0,0,0,'+(Math.random()*0.05)+')';ctx.fillRect(Math.random()*size,Math.random()*size,1,1)}
-    return new THREE.CanvasTexture(c);
-  }
+ function makePlasticTexture() {
+  return new THREE.TextureLoader().load("plastic.png");
+}
 
-  // ========== Scene setup ==========
+function makeMetalTexture() {
+  return new THREE.TextureLoader().load("metal.jpg");
+}
+
+function makeOrganicTexture() {
+  return new THREE.TextureLoader().load("organic.png");
+}
+
+
+  // ==========
+    Scene setup ==========
   const canvas=document.getElementById('gameCanvas');
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(window.devicePixelRatio);renderer.setSize(window.innerWidth,window.innerHeight);
   const scene=new THREE.Scene();
