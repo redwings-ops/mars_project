@@ -60,7 +60,7 @@ Notes:
   // ========== Helper: procedural canvas texture creators ===========
  
   function makeMarsTexture() {
-  const tex = new THREE.TextureLoader().load("mars_ground.png");
+  const tex = new THREE.TextureLoader().load(mars_ground.jpg);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(20, 20);   // tiling
   return tex;
