@@ -119,22 +119,33 @@ Mars Rover Recycler with Image Textures
   function setMode(m){mode=m; if(m==='machine'){camera.position.set(12,3.2,6); camera.lookAt(12,1,0); machineUI.style.display='block'; document.getElementById('prompt').style.display='none';} else {camera.position.set(rover.position.x,8,rover.position.z+12);camera.lookAt(rover.position.x,0,rover.position.z); machineUI.style.display='none'; document.getElementById('prompt').style.display='block'} }
 
   // movement
+  // simple movement
   const keys={}; window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true; if(e.key===' '){collectNearby()} if(e.key.toLowerCase()==='m'){setMode(mode==='explore'?'machine':'explore')}});
   window.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
 
-  function collectNearby(){for(let i=0;i<wastes.length;i++){const w=wastes[i]; if(w.userData.collected) continue; const d=w.position.distanceTo(rover.position); if(d<1.5){w.userData.collected=true; scene.remove(w); inventory.push({type:w.userData.type}); refreshInventory(); break}} }
+  function collectNearby(){// pick any waste within 1.2m and add to inventory
+    for(let i=0;i<wastes.length;i++){const w=wastes[i]; if(w.userData.collected) continue; const d=w.position.distanceTo(rover.position); if(d<1.5){w.userData.collected=true; scene.remove(w); inventory.push({type:w.userData.type}); refreshInventory(); break}} }
 
+  // simple collision / keep rover on ground
   function update(dt){const speed=dt*4; let moved=false; if(keys['arrowup']||keys['w']){rover.position.z-=speed;moved=true} if(keys['arrowdown']||keys['s']){rover.position.z+=speed;moved=true} if(keys['arrowleft']||keys['a']){rover.position.x-=speed;moved=true} if(keys['arrowright']||keys['d']){rover.position.x+=speed;moved=true}
-    if(moved){camera.position.x=rover.position.x;camera.position.z=rover.position.z+12; camera.lookAt(rover.position.x,0,rover.position.z)} }
+    if(moved){camera.position.x=rover.position.x;camera.position.z=rover.position.z+12; camera.lookAt(rover.position.x,0,rover.position.z)}
+  }
 
+  // drag support from inventory to machine UI (already uses HTML drag)
+
+  // animate loop
   let last=performance.now();
   function loop(t){const dt=(t-last)/1000; last=t; update(dt); renderer.render(scene,camera); requestAnimationFrame(loop)} requestAnimationFrame(loop);
 
+  // resize
   window.addEventListener('resize',()=>{renderer.setSize(window.innerWidth,window.innerHeight);camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix()});
 
+  // touch: show simple on-screen joystick for mobile (tiny)
+  // (Not full joystick implementation — tap space area to collect on mobile)
   canvas.addEventListener('touchstart',e=>{if(e.touches.length===1){collectNearby()}});
 
-  console.log('Mars Rover Recycler with textures loaded. Place mars_ground.jpg, plastic.jpg, metal.jpg, organic.jpg in same folder.');
+  // quick tips in console
+  console.log('Mars Rover Recycler demo loaded. Controls: WASD/arrows to move, Space to collect, M to open machine.');
   </script>
 </body>
 </html>
