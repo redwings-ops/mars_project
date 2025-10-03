@@ -57,25 +57,13 @@ Notes:
   <!-- Three.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
   <script>
-  // ========== Helper: procedural canvas texture creators ===========
- 
-  function makeMarsTexture() {
-  const tex = new THREE.TextureLoader().load(mars_ground.jpg);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(20, 20);   // tiling
-  return tex;
-  }
- function makePlasticTexture() {
-  return new THREE.TextureLoader().load("plastic.png");
-}
-
-function makeMetalTexture() {
-  return new THREE.TextureLoader().load("metal.jpg");
-}
-
-function makeOrganicTexture() {
-  return new THREE.TextureLoader().load("organic.png");
-}
+  // ========== Helper: procedural canvas texture creators =========
+    ‎  // Load textures
+‎  const loader = new THREE.TextureLoader();
+‎  const marsTexture = loader.load('mars_ground.jpg');
+‎  const plasticTexture = loader.load('plastic.jpg');
+‎  const metalTexture = loader.load('metal.jpg');
+‎  const organicTexture = loader.load('organic.jpg');
 
 
   // ==========Scene setup ==========
