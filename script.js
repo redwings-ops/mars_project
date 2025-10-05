@@ -7,7 +7,7 @@
   camera.position.set(0,8,12);
   camera.lookAt(0,0,0);
 
-  // Enhanced Mars lighting - Cold, harsh UV environment
+  // Enhanced Mars lighting - Cold, harsh UV Environment
   const hemi=new THREE.HemisphereLight(0xffb380,0x5d2a0a,0.6);scene.add(hemi);
   
   // Harsh UV sunlight (no ozone protection)
