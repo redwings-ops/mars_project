@@ -1,6 +1,6 @@
 # 🚀 Mars Rover Recycler Game
 
-A comprehensive 3D Mars exploration and waste management simulation built with Three.js. Experience realistic Mars conditions while operating a sophisticated rover to collect and recycle waste across the Martian landscape.
+A comprehensive 3D Mars exploration and waste management simulation built with Three.js. Experience realistic Mars conditions while operating a sophisticated rover to collect and Recycle waste across the Martian landscape.
 
 ![Mars Rover Recycler](https://img.shields.io/badge/Mars-Rover%20Recycler-red?style=for-the-badge&logo=rocket)
 [![GitHub](https://img.shields.io/github/license/redwings-ops/mars_project?style=for-the-badge)](LICENSE)
